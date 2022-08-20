@@ -10,22 +10,26 @@ services:
       - 80:80
       - 443:443
     volumes:
-      - /var/run/docker.sock:/tmp/docker.sock:ro
+      - storage/volumes/nginx/certs:/etc/nginx/certs:ro
+      - storage/volumes/nginx/vhostd:/etc/nginx/vhost.d
+      - sstorage/volumes/nginx/config/settings.conf:/etc/nginx/conf.d/custom_settings.conf:ro
+      - storage/var/run/docker.sock:/tmp/docker.sock:ro
 
   portal:
     image: nginx
     container_name: Portal
     restart: always
     environment:
-      - VIRTUAL_HOST=portal.midominio.com
+     - VIRTUAL_HOST=portal-falecogra.hopto.org
+
     volumes:
-      - /storage/nginx/portal:/usr/share/nginx/html:ro
+      - /storage/www/portal:/usr/share/nginx/html:ro
 
   erp:
     image: httpd
     container_name: ERP
     restart: always
     environment:
-      - VIRTUAL_HOST=erp.midominio.com
+      - VIRTUAL_HOST=erp-falecogra.hopto.org
     volumes:
-      - /storage/apache/erp:/usr/local/apache2/htdocs
+      - /storage/www/erp:/usr/local/apache2/htdocs
