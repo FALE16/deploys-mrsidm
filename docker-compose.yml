@@ -9,27 +9,38 @@ services:
     ports:
       - 80:80
       - 443:443
+    environment:
+     - VIRTUAL_HOST=apps-falecogra.hopto.org #modificar"
     volumes:
-      - storage/volumes/nginx/certs:/etc/nginx/certs:ro
-      - storage/volumes/nginx/vhostd:/etc/nginx/vhost.d
-      - sstorage/volumes/nginx/config/settings.conf:/etc/nginx/conf.d/custom_settings.conf:ro
-      - storage/var/run/docker.sock:/tmp/docker.sock:ro
+      - /volumes/nginx/certs:/etc/nginx/certs:ro
+      - /volumes/nginx/vhostd:/etc/nginx/vhost.d
+      - /volumes/nginx/config/settings.conf:/etc/nginx/conf.d/custom_settings.conf:ro
+      - /var/run/docker.sock:/tmp/docker.sock:ro
 
   portal:
     image: nginx
     container_name: Portal
     restart: always
-    environment:
-     - VIRTUAL_HOST=portal-falecogra.hopto.org
+    #environment:
+    # - VIRTUAL_HOST=portal-falecogra.hopto.org #modificar"
 
     volumes:
-      - /storage/www/portal:/usr/share/nginx/html:ro
+      - /volumes/www/portal:/usr/share/nginx/html:ro
+
+  factura:
+    image: nginx
+    container_name: Factura
+    restart: always
+    #environment:
+      #- VIRTUAL_HOST=erp-falecogra.hopto.org
+    volumes:
+      - /volumes/www/factura:/usr/share/nginx/html:ro
 
   erp:
     image: httpd
     container_name: ERP
     restart: always
-    environment:
-      - VIRTUAL_HOST=erp-falecogra.hopto.org
+    #environment:
+      #- VIRTUAL_HOST=erp-falecogra.hopto.org
     volumes:
-      - /storage/www/erp:/usr/local/apache2/htdocs
+      - /volumes/www/erp:/usr/local/apache2/htdocs
