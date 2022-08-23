@@ -1,0 +1,18 @@
+version: '3.1'
+
+services:
+#servicios
+  portal:
+    image: nginx
+    container_name: Portal
+    restart: always
+    ports:
+     - 80:80
+     - 443:443
+    environment:
+      - VIRTUAL_HOST=portal-falecogra.hopto.org 
+
+    volumes:
+      - /volumes/www/portal:/usr/share/nginx/html:ro
+
+  
