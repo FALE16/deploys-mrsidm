@@ -3,44 +3,74 @@ version: '3.1'
 services:
 #servicios
   reverse-proxy:
-    image: jwilder/nginx-proxy:alpine
+    image: nginxproxy/nginx-proxy:alpine
     container_name: Reverse-Proxy
     restart: always
     ports:
       - 80:80
       - 443:443
     environment:
-     - VIRTUAL_HOST=apps-falecogra.hopto.org #modificar"
+     - LETSENCRYPT_HOST=falecogra.hopto.org #dominio"
+     - LETSENCRYPT_EMAIL=fale.cogra@gmail.com #correo de validacion
     volumes:
       - /volumes/nginx/certs:/etc/nginx/certs:ro
       - /volumes/nginx/vhostd:/etc/nginx/vhost.d
-      - /volumes/nginx/config/settings.conf:/etc/nginx/conf.d/custom_settings.conf:ro
+      - /volumes/nginx/html:/usr/share/nginx/html:rw
       - /var/run/docker.sock:/tmp/docker.sock:ro
+
+  lets-encrypt:
+    image: jrcs/letsencrypt-nginx-proxy-companion
+    container_name: 'Lets-Encrypt'
+    restart: always
+    environment:
+      - NGINX_PROXY_CONTAINER=Reverse-Proxy
+      - VIRTUAL_HOST=falecogra.hopto.org
+      - VIRTUAL_PATH=/.well-known
+    volumes:
+      - /volumes/nginx/certs:/etc/nginx/certs
+      - /volumes/nginx/vhostd:/etc/nginx/vhost.d
+      - /volumes/nginx/html:/usr/share/nginx/html:rw
+      - /var/run/docker.sock:/var/run/docker.sock:ro
 
   portal:
     image: nginx
-    container_name: Portal
     restart: always
-    #environment:
-    # - VIRTUAL_HOST=portal-falecogra.hopto.org #modificar"
-
+    environment:
+      - VIRTUAL_HOST=falecogra.hopto.org
+      - VIRTUAL_PATH=/
+      - VIRTUAL_DEST=/
+      - LETSENCRYPT_HOST=falecogra.hopto.org
+      - LETSENCRYPT_EMAIL=fale.cogra@gmail.com
     volumes:
       - /volumes/www/portal:/usr/share/nginx/html:ro
 
   factura:
     image: nginx
-    container_name: Factura
     restart: always
-    #environment:
-      #- VIRTUAL_HOST=erp-falecogra.hopto.org
+    environment:
+      - VIRTUAL_HOST=falecogra.hopto.org
+      - VIRTUAL_PATH=/facturas
+      - VIRTUAL_DEST=/
+      - LETSENCRYPT_HOST=falecogra.hopto.org
+      - LETSENCRYPT_EMAIL=fale.cogra@gmail.com
     volumes:
       - /volumes/www/factura:/usr/share/nginx/html:ro
 
   erp:
     image: httpd
-    container_name: ERP
     restart: always
-    #environment:
-      #- VIRTUAL_HOST=erp-falecogra.hopto.org
+    environment:
+      - VIRTUAL_HOST=falecogra.hopto.org
+      - VIRTUAL_PATH=/erp
+      - VIRTUAL_DEST=/
+      - LETSENCRYPT_HOST=falecogra.hopto.org
+      - LETSENCRYPT_EMAIL=fale.cogra@gmail.com
     volumes:
       - /volumes/www/erp:/usr/local/apache2/htdocs
+
+
+
+
+
+
+  
